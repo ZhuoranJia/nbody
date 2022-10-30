@@ -11,7 +11,8 @@
 
 import sys
 from math import sqrt, pi as PI
-
+import csv
+import time
 
 def combinations(l):
     result = []
@@ -67,9 +68,10 @@ BODIES = {
 
 SYSTEM = tuple(BODIES.values())
 PAIRS = tuple(combinations(SYSTEM))
+PLANETS = tuple(BODIES.keys())
 
-
-def advance(dt, n, bodies=SYSTEM, pairs=PAIRS):
+def advance(dt, n, bodies=SYSTEM, pairs=PAIRS, planets=PLANETS):
+    output_position(name=None,r=None,start=True)
     for i in range(n):
         for ([x1, y1, z1], v1, m1, [x2, y2, z2], v2, m2) in pairs:
             dx = x1 - x2
@@ -85,12 +87,21 @@ def advance(dt, n, bodies=SYSTEM, pairs=PAIRS):
             v2[2] += dz * b1m
             v2[1] += dy * b1m
             v2[0] += dx * b1m
-        for (r, [vx, vy, vz], m) in bodies:
+        for j in range(len(bodies)):
+            (r, [vx, vy, vz], m) = bodies[j]
+            name = planets[j]
             r[0] += dt * vx
             r[1] += dt * vy
             r[2] += dt * vz
+            output_position(name,r)
 
-
+def output_position(name,r,start=False):
+    if start:
+        with open('nbody.csv', 'w') as fn:
+            fn.write("name; position x; position y; position z\n")
+    else:
+        with open('nbody.csv', 'a') as fn:
+            fn.write("{};{};{};{}\n".format(name,r[0],r[1],r[2]))
 def report_energy(bodies=SYSTEM, pairs=PAIRS, e=0.0):
     for ((x1, y1, z1), v1, m1, (x2, y2, z2), v2, m2) in pairs:
         dx = x1 - x2
@@ -115,9 +126,10 @@ def offset_momentum(ref, bodies=SYSTEM, px=0.0, py=0.0, pz=0.0):
 
 def main(n, ref="sun"):
     offset_momentum(BODIES[ref])
-    report_energy()
+    begin = time.perf_counter()
     advance(0.01, n)
-    report_energy()
+    end = time.perf_counter()
+    print("running tims: {:0.5f} seconds".format(end-begin))
 
 
 if __name__ == "__main__":
@@ -129,3 +141,4 @@ if __name__ == "__main__":
         print("Call this program with an integer as program argument")
         print("(to set the number of iterations for the n-body simulation).")
         sys.exit(1)
+#ggggggg
