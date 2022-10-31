@@ -6,7 +6,7 @@
    An implementation pretty much from scratch, with inspiration from the Rust
    version, which used the idea of saving some of the ingredients of the
    compution in an array instead of recomputing them.
-   
+
    contributed by cvergu
    slightly modified by bmmeijers
 */
@@ -14,7 +14,11 @@
 #define _USE_MATH_DEFINES // https://docs.microsoft.com/en-us/cpp/c-runtime-library/math-constants?view=msvc-160
 #include <cmath>
 #include <iostream>
-
+#include <string>
+#include <vector>
+#include <time.h>
+#include <cstdlib>
+#include <fstream>
 
 // these values are constant and not allowed to be changed
 const double SOLAR_MASS = 4 * M_PI * M_PI;
@@ -246,15 +250,16 @@ int main(int argc, char **argv) {
         std::cout << "(to set the number of iterations for the n-body simulation)." << std::endl;
         return EXIT_FAILURE;
     } else {
+        clock_t  begin,end;
+        begin = clock();
         const unsigned int n = atoi(argv[1]);
         offset_momentum(state);
         std::cout << energy(state) << std::endl;
         for (int i = 0; i < n; ++i) {
             advance(state, 0.01);
         }
-        std::cout << energy(state) << std::endl;
+        end = clock();
+        std::cout <<"running time: "<<double (end-begin)/CLOCKS_PER_SEC<<"s"<<std::endl;
         return EXIT_SUCCESS;
     }
 }
-
-
