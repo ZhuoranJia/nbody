@@ -105,6 +105,7 @@ void advance(body state[BODIES_COUNT], double dt) {
     // 2D array (to hold: BODIES_COUNT x BODIES_COUNT elements)
     vector3d rij[BODIES_COUNT][BODIES_COUNT];
 
+
     for (unsigned int i = 0; i < BODIES_COUNT; ++i) {
         for (unsigned int j = i + 1; j < BODIES_COUNT; ++j) {
             rij[i][j] = state[i].position - state[j].position;
@@ -137,6 +138,7 @@ void advance(body state[BODIES_COUNT], double dt) {
      */
     for (unsigned int i = 0; i < BODIES_COUNT; ++i) {
         state[i].position += state[i].velocity * dt;
+
     }
 }
 
@@ -255,9 +257,16 @@ int main(int argc, char **argv) {
         const unsigned int n = atoi(argv[1]);
         offset_momentum(state);
         std::cout << energy(state) << std::endl;
+        std::ofstream out_stream;
+        out_stream.open("nbody_cpp.csv", std::ios::app);
+        out_stream << "name" <<';'<<"position x"<<';'<<"position y"<<';'<<"position z"<<std::endl;
+
         for (int i = 0; i < n; ++i) {
             advance(state, 0.01);
+            for (int j =0; j<5; ++j)
+                out_stream<<state[j].name<<';'<<state[j].position.x<<';'<<state[j].position.y<<';'<<state[j].position.z<<std::endl;
         }
+        out_stream.close();
         end = clock();
         std::cout <<"running time: "<<double (end-begin)/CLOCKS_PER_SEC<<"s"<<std::endl;
         return EXIT_SUCCESS;
